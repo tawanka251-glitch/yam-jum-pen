@@ -1,0 +1,6 @@
+Add dependencies:
+  npm install @prisma/client
+  npm install -D prisma
+
+Then:
+  npx prisma generate

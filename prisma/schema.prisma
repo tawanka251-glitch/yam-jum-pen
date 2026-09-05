@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  OWNER
+  CARETAKER
+}
+
+enum PetStatus {
+  AVAILABLE
+  PENDING
+  ACCEPTED
+  COMPLETED
+}
+
+model User {
+  id           String         @id @default(cuid())
+  name         String
+  email        String         @unique
+  passwordHash String
+  role         UserRole       @default(OWNER)
+  pets         Pet[]
+  ownerConvos  Conversation[] @relation("OwnerConversations")
+  careConvos   Conversation[] @relation("CaretakerConversations")
+  messages     Message[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Pet {
+  id            String         @id @default(cuid())
+  name          String
+  type          String
+  breed         String
+  age           String
+  behavior      String
+  medicalNotes  String
+  status        PetStatus      @default(AVAILABLE)
+  ownerId       String
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  @@index([ownerId])
+  @@index([status])
+}
+
+model Conversation {
+  id          String    @id @default(cuid())
+  petId       String
+  ownerId     String
+  caretakerId String
+  pet         Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+  owner       User      @relation("OwnerConversations", fields: [ownerId], references: [id], onDelete: Cascade)
+  caretaker   User      @relation("CaretakerConversations", fields: [caretakerId], references: [id], onDelete: Cascade)
+  messages    Message[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([petId, ownerId, caretakerId])
+  @@index([ownerId])
+  @@index([caretakerId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
