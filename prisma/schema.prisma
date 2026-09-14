@@ -32,8 +32,8 @@ model User {
   messages     Message[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  phone   String?
-  address String?
+  phone        String?
+  address      String?
 }
 
 model Pet {
@@ -50,7 +50,7 @@ model Pet {
   conversations Conversation[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  
+
   @@index([ownerId])
   @@index([status])
 }
@@ -67,14 +67,13 @@ model Conversation {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  returnDueAt       DateTime?
-  confirmedPickupAt DateTime?   // owner + caretaker ต้องยืนยันทั้งคู่ (เก็บแยก 2 field ด้านล่าง)
-  ownerConfirmedPickup     Boolean @default(false)
-  caretakerConfirmedPickup Boolean @default(false)
-  ownerConfirmedReturn     Boolean @default(false)
-  caretakerConfirmedReturn Boolean @default(false)
+  returnDueAt              DateTime?
+  ownerConfirmedPickup     Boolean   @default(false)
+  caretakerConfirmedPickup Boolean   @default(false)
+  ownerConfirmedReturn     Boolean   @default(false)
+  caretakerConfirmedReturn Boolean   @default(false)
 
-  reports       Report[]
+  reports Report[]
 
   @@unique([petId, ownerId, caretakerId])
   @@index([ownerId])
@@ -82,7 +81,7 @@ model Conversation {
 }
 
 model Report {
-  id             String   @id @default(cuid())
+  id             String       @id @default(cuid())
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   reporterId     String

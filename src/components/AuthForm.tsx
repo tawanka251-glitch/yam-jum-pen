@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { PetMascot } from './PetMascot';
 
 export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
   const router = useRouter();
@@ -36,18 +37,55 @@ export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
   }
 
   return (
-    <form onSubmit={submit} className="mx-auto w-full max-w-md space-y-4 rounded-2xl border bg-white p-6 shadow-sm">
-      {mode === 'register' && <input className="w-full rounded-lg border p-3" placeholder="ชื่อ-นามสกุล" value={name} onChange={e => setName(e.target.value)} required />}
-      <input className="w-full rounded-lg border p-3" type="email" placeholder="อีเมล" value={email} onChange={e => setEmail(e.target.value)} required />
-      <input className="w-full rounded-lg border p-3" type="password" placeholder="รหัสผ่านอย่างน้อย 6 ตัว" value={password} onChange={e => setPassword(e.target.value)} minLength={6} required />
+    <form
+      onSubmit={submit}
+      className="mx-auto w-full max-w-md space-y-4 rounded-blob bg-white p-8 shadow-lg"
+    >
+      <PetMascot className="mx-auto mb-2 h-16 w-16" />
+
       {mode === 'register' && (
-        <select className="w-full rounded-lg border p-3" value={role} onChange={e => setRole(e.target.value as 'OWNER' | 'CARETAKER')}>
+        <input
+          className="w-full rounded-full border-2 border-blush bg-cream p-3 px-5 text-ink placeholder:text-ink/40 focus:border-peach focus:outline-none"
+          placeholder="ชื่อ-นามสกุล"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          required
+        />
+      )}
+      <input
+        className="w-full rounded-full border-2 border-blush bg-cream p-3 px-5 text-ink placeholder:text-ink/40 focus:border-peach focus:outline-none"
+        type="email"
+        placeholder="อีเมล"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        required
+      />
+      <input
+        className="w-full rounded-full border-2 border-blush bg-cream p-3 px-5 text-ink placeholder:text-ink/40 focus:border-peach focus:outline-none"
+        type="password"
+        placeholder="รหัสผ่านอย่างน้อย 6 ตัว"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        minLength={6}
+        required
+      />
+      {mode === 'register' && (
+        <select
+          className="w-full rounded-full border-2 border-blush bg-cream p-3 px-5 text-ink focus:border-peach focus:outline-none"
+          value={role}
+          onChange={e => setRole(e.target.value as 'OWNER' | 'CARETAKER')}
+        >
           <option value="OWNER">เจ้าของสัตว์เลี้ยง</option>
           <option value="CARETAKER">ผู้รับฝาก</option>
         </select>
       )}
-      {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>}
-      <button disabled={loading} className="w-full rounded-lg bg-orange-500 p-3 font-semibold text-white disabled:opacity-50">
+      {error && (
+        <p className="rounded-3xl bg-red-50 p-3 text-sm text-red-500">{error}</p>
+      )}
+      <button
+        disabled={loading}
+        className="w-full rounded-full bg-peach p-3 font-kanit font-bold text-white shadow-md transition hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
+      >
         {loading ? 'กำลังดำเนินการ...' : mode === 'login' ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก'}
       </button>
     </form>
