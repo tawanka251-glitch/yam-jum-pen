@@ -17,6 +17,7 @@ enum PetStatus {
   PENDING
   ACCEPTED
   COMPLETED
+  DISPUTED
 }
 
 model User {
@@ -31,6 +32,8 @@ model User {
   messages     Message[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  phone   String?
+  address String?
 }
 
 model Pet {
@@ -64,9 +67,29 @@ model Conversation {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  returnDueAt       DateTime?
+  confirmedPickupAt DateTime?   // owner + caretaker ต้องยืนยันทั้งคู่ (เก็บแยก 2 field ด้านล่าง)
+  ownerConfirmedPickup     Boolean @default(false)
+  caretakerConfirmedPickup Boolean @default(false)
+  ownerConfirmedReturn     Boolean @default(false)
+  caretakerConfirmedReturn Boolean @default(false)
+
+  reports       Report[]
+
   @@unique([petId, ownerId, caretakerId])
   @@index([ownerId])
   @@index([caretakerId])
+}
+
+model Report {
+  id             String   @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  reporterId     String
+  type           String   // "LOST" | "CANNOT_RETURN" | "OWNER_UNREACHABLE" | "SICK"
+  detail         String
+  status         String   @default("OPEN") // OPEN | RESOLVED
+  createdAt      DateTime @default(now())
 }
 
 model Message {
