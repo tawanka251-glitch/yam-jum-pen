@@ -2,13 +2,15 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { PetMascot } from './PetMascot';
+import { PetMascot } from '@/components/PetMascot';
 
 export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [role, setRole] = useState<'OWNER' | 'CARETAKER'>('OWNER');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,7 +21,10 @@ export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
     setLoading(true);
     try {
       const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
-      const body = mode === 'login' ? { email, password } : { name, email, password, role };
+      const body =
+        mode === 'login'
+          ? { email, password }
+          : { name, email, password, role, phone, address };
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,14 +75,33 @@ export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
         required
       />
       {mode === 'register' && (
-        <select
-          className="w-full rounded-full border-2 border-blush bg-cream p-3 px-5 text-ink focus:border-peach focus:outline-none"
-          value={role}
-          onChange={e => setRole(e.target.value as 'OWNER' | 'CARETAKER')}
-        >
-          <option value="OWNER">เจ้าของสัตว์เลี้ยง</option>
-          <option value="CARETAKER">ผู้รับฝาก</option>
-        </select>
+        <>
+          <input
+            className="w-full rounded-full border-2 border-blush bg-cream p-3 px-5 text-ink placeholder:text-ink/40 focus:border-peach focus:outline-none"
+            type="tel"
+            placeholder="เบอร์โทรศัพท์"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            pattern="^0[689]\d{8}$"
+            title="กรอกเบอร์โทร 10 หลัก ขึ้นต้นด้วย 06, 08 หรือ 09"
+            required
+          />
+          <input
+            className="w-full rounded-full border-2 border-blush bg-cream p-3 px-5 text-ink placeholder:text-ink/40 focus:border-peach focus:outline-none"
+            placeholder="ที่อยู่"
+            value={address}
+            onChange={e => setAddress(e.target.value)}
+            required
+          />
+          <select
+            className="w-full rounded-full border-2 border-blush bg-cream p-3 px-5 text-ink focus:border-peach focus:outline-none"
+            value={role}
+            onChange={e => setRole(e.target.value as 'OWNER' | 'CARETAKER')}
+          >
+            <option value="OWNER">เจ้าของสัตว์เลี้ยง</option>
+            <option value="CARETAKER">ผู้รับฝาก</option>
+          </select>
+        </>
       )}
       {error && (
         <p className="rounded-3xl bg-red-50 p-3 text-sm text-red-500">{error}</p>

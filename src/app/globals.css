@@ -1,9 +1,14 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-* {
-  box-sizing: border-box;
-}
+@theme {
+  --color-cream: #FFF6EA;
+  --color-peach: #FFB98A;
+  --color-blush: #FFD3C7;
+  --color-mint: #B8E3D2;
+  --color-sky: #CDEFFF;
+  --color-ink: #5C4433;
 
-body {
-  margin: 0;
+  --radius-blob: 2.5rem;
+
+  --font-kanit: var(--font-kanit-import);
 }
