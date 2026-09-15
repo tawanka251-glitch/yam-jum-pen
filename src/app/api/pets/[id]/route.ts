@@ -4,10 +4,12 @@ import { getCurrentUser } from '@/lib/auth';
 
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
+
     const pet = await prisma.pet.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { owner: { select: { id: true, name: true } } },
     });
     if (!pet) {
@@ -18,14 +20,16 @@ export async function GET(
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
+
     const user = await getCurrentUser();
     if (!user) {
         return NextResponse.json({ error: 'กรุณาเข้าสู่ระบบ' }, { status: 401 });
     }
 
-    const pet = await prisma.pet.findUnique({ where: { id: params.id } });
+    const pet = await prisma.pet.findUnique({ where: { id } });
     if (!pet) {
         return NextResponse.json({ error: 'ไม่พบประกาศนี้' }, { status: 404 });
     }
@@ -36,7 +40,7 @@ export async function PATCH(
     const { name, type, breed, age, behavior, medicalNotes } = await req.json();
 
     const updated = await prisma.pet.update({
-        where: { id: params.id },
+        where: { id },
         data: {
             ...(name?.trim() && { name: name.trim() }),
             ...(type?.trim() && { type: type.trim() }),
@@ -52,14 +56,16 @@ export async function PATCH(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
+
     const user = await getCurrentUser();
     if (!user) {
         return NextResponse.json({ error: 'กรุณาเข้าสู่ระบบ' }, { status: 401 });
     }
 
-    const pet = await prisma.pet.findUnique({ where: { id: params.id } });
+    const pet = await prisma.pet.findUnique({ where: { id } });
     if (!pet) {
         return NextResponse.json({ error: 'ไม่พบประกาศนี้' }, { status: 404 });
     }
@@ -73,6 +79,6 @@ export async function DELETE(
         );
     }
 
-    await prisma.pet.delete({ where: { id: params.id } });
+    await prisma.pet.delete({ where: { id } });
     return NextResponse.json({ ok: true });
 }
